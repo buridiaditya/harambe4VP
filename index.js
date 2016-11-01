@@ -17,16 +17,31 @@ b.cell("each").style({
 });
 var i;
 var last = 0;
+var G = 0;
 
 ///////// ADD PORTALS ////////
 for(i = 0; i < 10; i++){
-	// window.alert(last);
-	// var k = parseInt((Math.random()*100)%(100-last)) + last;
-	// last = k+6;
+	var k = -1;	
 	
-	// b.cell([parseInt(k/10),parseInt(k%10)]).style({
-	// 	background: "green";
-	// });
+	if (i%2==0) {
+		do {
+			k = parseInt((Math.random()*100)%(10-last)) + last;
+			if (k!=0) break;
+		} 
+		while(i==0);
+	} else {
+		do {
+			k = parseInt((Math.random()*100)%(10-last));
+			if (k!=0) break;
+		}
+		while(i==9);
+	}
+	// window.alert(k);
+	last = (k+6)%10;
+	
+	b.cell([i,parseInt(k%10)]).style({
+		background: "lightgreen"
+	});
 }
 
 /////// TIMER //////////
