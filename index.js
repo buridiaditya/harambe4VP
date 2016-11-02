@@ -1,12 +1,13 @@
 var b = jsboard.board({ attach: "game", size: "10x10" });
 var x = jsboard.piece({ text: "X", fontSize: "40px", textAlign: "center" });
-var o = jsboard.piece({ text: "O", fontSize: "40px", textAlign: "center"});
 var posiCol = 0;
 var posiRow = 9;
 var past = 0;
 var timer = 30;
 var CLR1 = "#99ff66";
 var CLR2 = "#ff4d4d"
+var ranIn = 0;
+var ops = ["+","-","*"];
 
 var lev = document.getElementById('level').innerHTML;
 
@@ -18,6 +19,20 @@ b.cell("each").style({
   background: "lightblue", 
   borderRadius: "15px" 
 });
+
+var go = document.getElementById('btn1');
+var txt = document.getElementById('target');
+txt.addEventListener('keypress', function(event) {
+    if (event.keyCode == 13 || event.which==13)
+        go.click();
+});
+
+timer = 30;
+ranIn = (parseInt(Math.random()*10))%3;
+document.getElementById('l1').innerHTML = parseInt(Math.random()*10+1);
+document.getElementById('l2').innerHTML = parseInt(Math.random()*10+1);
+document.getElementById('op1').innerHTML = ops[ranIn];
+document.getElementById('timer').innerHTML = timer;
 
 ///////// ADD PORTALS ////////
 
@@ -76,8 +91,6 @@ function addPortal(clr) {
 	}
 }
 
-
-
 addPortal(CLR1);
 addPortal(CLR2);
 
@@ -90,8 +103,22 @@ function myfunc() {
 	document.getElementById('timer').innerHTML = timer;
 }
 
+function won() {
+	b.cell([0,0]).place(x.clone());
+	window.alert("Congrats ...!! YOU WON");
+	var ret = confirm("Do you wish to Play Again?");
+	if (ret==true) {
+		window.location.reload();
+	} 
+}
+
 
 function move(){
+	if (document.getElementById('target').value == "") {
+		window.alert("Please Enter your answer");
+		return ;
+	}
+
 	b.cell([posiRow,posiCol]).rid();
 	var isAnswerCorrect = 0;
 	
@@ -100,8 +127,6 @@ function move(){
 		var val1 = parseInt(document.getElementById('l1').innerHTML);
 		var val2 = parseInt(document.getElementById('l2').innerHTML);
 		var op = document.getElementById('op1').innerHTML;
-		var ranIn = 0;
-		var ops = ["+","-","*"];
 		var greenCol;
 		var redCol;
 		var portalJump = false;
@@ -121,6 +146,10 @@ function move(){
 			b.cell([posiRow,posiCol]).rid();
 			dis = parseInt(timer/5) + 1;
 			if(posiRow%2==0){
+				if (posiCol<6 && posiRow==0) {
+					won();
+					return ;
+				}
 				greenCol = G[posiRow];
 				if(posiCol - dis <= greenCol && posiCol>greenCol){
 					posiCol = greenCol;
@@ -216,11 +245,15 @@ function move(){
 			b.cell([posiRow,posiCol]).place(x.clone());
 		}
 
-		timer = 30;
-		ranIn = (parseInt(Math.random()*10))%3;
-		document.getElementById('l1').innerHTML = parseInt(Math.random()*10+1);
-		document.getElementById('l2').innerHTML = parseInt(Math.random()*10+1);
-		document.getElementById('op1').innerHTML = ops[ranIn];
-		document.getElementById('timer').innerHTML = timer;
+		document.getElementById('target').value = "";
+		
+		if (isAnswerCorrect) {
+			timer = 30;
+			ranIn = (parseInt(Math.random()*10))%3;
+			document.getElementById('l1').innerHTML = parseInt(Math.random()*10+1);
+			document.getElementById('l2').innerHTML = parseInt(Math.random()*10+1);
+			document.getElementById('op1').innerHTML = ops[ranIn];
+			document.getElementById('timer').innerHTML = timer;
+		}
 	}
 }
