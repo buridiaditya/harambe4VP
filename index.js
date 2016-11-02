@@ -161,6 +161,7 @@ function move(){
 		} else {
 			window.alert("Nope...Try Again Dude");
 			dis = 6;
+			var tempposiCol,tempposiRow;
 			if(posiRow%2==0){
 				redCol = R[posiRow];
 				if(posiCol - dis <= redCol && posiCol>redCol){
@@ -168,13 +169,14 @@ function move(){
 					portalJump = true;
 				}
 				else {
-					posiCol = posiCol - dis;	
-					if(posiCol < 0){
-						posiCol = -1*posiCol - 1;
-						posiRow = posiRow + 1;	
-						if(posiCol >= R[posiRow]){
+					tempposiCol = posiCol - dis;	
+					if(tempposiCol < 0){
+						tempposiCol = -1*tempposiCol - 1;
+						tempposiRow = tempposiRow - 1;	
+						if(tempposiCol >= R[tempposiRow]){
 							portalJump = true;
-							posiCol = R[posiRow];
+							posiCol = R[tempposiRow];
+							posiRow--;
 						}
 					}
 				}
@@ -184,20 +186,17 @@ function move(){
 					posiCol = redCol;
 					portalJump = true;
 				} else {
-					posiCol = posiCol + dis;
-					if(posiCol > 9){
-						posiCol = 19 - posiCol;
-						posiRow = posiRow + 1 ;
-						if(posiCol <= R[posiRow]){
+					tempposiCol = posiCol + dis;
+					if(tempposiCol > 9){
+						tempposiCol = 19 - tempposiCol;
+						tempposiRow = posiRow - 1 ;
+						if(posiCol <= R[tempposiRow]){
 							portalJump = true;
-							posiCol = R[posiRow];
+							posiCol = R[tempposiRow];
+							posiRow--;
 						}
 					}
 				}
-			}
-			
-			if(posiCol == G[posiRow] && !portalJump){
-				posiCol = posiCol + ((posiRow%2==0)?(1):(-1));
 			}
 		}
 
@@ -206,11 +205,11 @@ function move(){
 		// transports from one Green Portal to next one
 		if (portalJump) {
 			b.cell([posiRow,posiCol]).rid();
-			if(isAnswerCorrect){
+			if(isAnswerCorrect && posiRow!=0){
 				posiRow = posiRow-1;
 				posiCol = G[posiRow];
 			}
-			else{
+			else if (!isAnswerCorrect && posiRow!=9){
 				posiRow = posiRow+1;
 				posiCol = R[posiRow];
 			}
