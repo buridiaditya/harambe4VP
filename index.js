@@ -15,34 +15,53 @@ b.cell("each").style({
   background: "lightblue", 
   borderRadius: "15px" 
 });
-var i;
-var last = 0;
-var G = 0;
 
 ///////// ADD PORTALS ////////
-for(i = 0; i < 10; i++){
-	var k = -1;	
-	
-	if (i%2==0) {
-		do {
-			k = parseInt((Math.random()*100)%(10-last)) + last;
-			if (k!=0) break;
-		} 
-		while(i==0);
-	} else {
-		do {
-			k = parseInt((Math.random()*100)%(10-last));
-			if (k!=0) break;
+
+var nextG= [],nextR = [];
+var G = {};
+
+var kk = 0;
+
+function addPortal(clr) {
+	var i;
+	var last = 0,lastk = 0;
+	for(i = 9; i >= 0; i--){
+		var k = -1;	
+		if (i%2==0) {
+			do {
+				k = parseInt((Math.random()*100)%(10-last)) + last;
+				if (clr=="red") {
+					while (G[i] == k) {
+						k = parseInt((Math.random()*100)%(10-last)) + last;		
+					}
+				}
+				if (k!=0) break;
+			} while(i==0);
+		} else {
+			do {
+				k = parseInt((Math.random()*100)%(10-last));
+				if (clr=="red") {
+					while (G[i]==k) {
+						k = parseInt((Math.random()*100)%(10-last));		
+					}
+				}
+				if (k!=0) break;
+			} while(i==9);
 		}
-		while(i==9);
+		last = (k+6)%10;
+		lastk = k;
+		G[i] = k;
+		b.cell([i,parseInt(k%10)]).style({
+			background: clr
+		});
 	}
-	// window.alert(k);
-	last = (k+6)%10;
-	
-	b.cell([i,parseInt(k%10)]).style({
-		background: "lightgreen"
-	});
 }
+
+
+
+addPortal("green");
+addPortal("red");
 
 /////// TIMER //////////
 var a = setInterval(function(){myfunc()},1000);
