@@ -5,6 +5,9 @@ var posiCol = 0;
 var posiRow = 9;
 var past = 0;
 var timer = 30;
+var CLR1 = "#99ff66";
+var CLR2 = "#ff4d4d"
+
 var lev = document.getElementById('level').innerHTML;
 
 b.cell([posiRow,posiCol]).place(x.clone());
@@ -34,7 +37,7 @@ function addPortal(clr) {
 
 				//////////  Site Loading time increasing bcos of this ///////
 				
-				if (clr=="red") {
+				if (clr==CLR2) {
 					while (G[i] == k) {
 						k = parseInt((Math.random()*100)%(10-last)) + last;		
 					}
@@ -46,7 +49,7 @@ function addPortal(clr) {
 			do {
 				k = parseInt((Math.random()*100)%(10-last));
 
-				if (clr=="red") {
+				if (clr==CLR2) {
 					while (G[i]==k) {
 						k = parseInt((Math.random()*100)%(10-last));		
 					}
@@ -55,14 +58,14 @@ function addPortal(clr) {
 				if (k!=0) break;
 			} while(i==9);
 		}
-		if (clr == "green")
+		if (clr == CLR1)
 			nextG[lastk] = k;
 		else 
 			nextR[k] = lastk;
 		last = (k+6)%10;
 		lastk = k;
 
-		if (clr=="green") 
+		if (clr==CLR1) 
 			G[i] = k;
 		else 
 			R[i] = k;
@@ -75,8 +78,8 @@ function addPortal(clr) {
 
 
 
-addPortal("green");
-addPortal("red");
+addPortal(CLR1);
+addPortal(CLR2);
 
 /////// TIMER //////////
 var a = setInterval(function(){myfunc()},1000);
@@ -114,11 +117,12 @@ function move(){
 		}
 
 		if(isAnswerCorrect){
+			window.alert("Correct...\\/");
 			b.cell([posiRow,posiCol]).rid();
 			dis = parseInt(timer/5) + 1;
 			if(posiRow%2==0){
 				greenCol = G[posiRow];
-				if(posiCol - dis <= greenCol && posiCol>greenCol && greenCol!=posiCol ){
+				if(posiCol - dis <= greenCol && posiCol>greenCol){
 					posiCol = greenCol;
 					portalJump = true;
 				}
@@ -135,7 +139,7 @@ function move(){
 				}
 			} else {
 				greenCol = G[posiRow];
-				if(posiCol + dis >= greenCol && posiCol<greenCol && !(greenCol == posiCol)){
+				if(posiCol + dis >= greenCol && posiCol<greenCol){
 					posiCol = greenCol;
 					portalJump = true;
 				} else {
@@ -155,16 +159,50 @@ function move(){
 				posiCol = posiCol + ((posiRow%2==0)?(1):(-1));
 			}
 		} else {
-			redCol = R[posiRow];
-			if(redCol - posiCol <= 6 && redCol != posiCol){
-				posiCol = redCol;
-				portalJump = true;
+			window.alert("Nope...Try Again Dude");
+			dis = 6;
+			if(posiRow%2==0){
+				redCol = R[posiRow];
+				if(posiCol - dis <= redCol && posiCol>redCol){
+					posiCol = redCol;
+					portalJump = true;
+				}
+				else {
+					posiCol = posiCol - dis;	
+					if(posiCol < 0){
+						posiCol = -1*posiCol - 1;
+						posiRow = posiRow + 1;	
+						if(posiCol >= R[posiRow]){
+							portalJump = true;
+							posiCol = R[posiRow];
+						}
+					}
+				}
+			} else {
+				redCol = R[posiRow];
+				if(posiCol + dis >= redCol && posiCol<redCol){
+					posiCol = redCol;
+					portalJump = true;
+				} else {
+					posiCol = posiCol + dis;
+					if(posiCol > 9){
+						posiCol = 19 - posiCol;
+						posiRow = posiRow + 1 ;
+						if(posiCol <= R[posiRow]){
+							portalJump = true;
+							posiCol = R[posiRow];
+						}
+					}
+				}
+			}
+			
+			if(posiCol == G[posiRow] && !portalJump){
+				posiCol = posiCol + ((posiRow%2==0)?(1):(-1));
 			}
 		}
 
 		///// generation of random expression/////////
 		b.cell([posiRow,posiCol]).place(x.clone());
-		window.alert(portalJump);
 		// transports from one Green Portal to next one
 		if (portalJump) {
 			b.cell([posiRow,posiCol]).rid();
