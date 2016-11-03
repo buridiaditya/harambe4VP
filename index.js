@@ -10,6 +10,7 @@ var ranIn = 0;
 var ops = ["+","-","*"];
 var tottimer = [30,60,90];
 var Timers = [5,10,15];
+var timer;
 
 var lev = document.getElementById('level').innerHTML;
 
@@ -20,6 +21,14 @@ b.cell("each").style({
   height: "50px", 
   background: "lightblue", 
   borderRadius: "15px" 
+});
+
+b.cell([9,0]).style({
+	background: "#ffffff"
+});
+
+b.cell([0,0]).style({
+	background: "#000000"
 });
 
 var go = document.getElementById('btn1');
@@ -43,28 +52,32 @@ function eval(a,bm,ind) {
 	return a*bm;
 }
 
-
-var timer = tottimer[lev-1];
-ranIn = getRandominRange(0,2);
-
-if (lev==1) {
-	document.getElementById('l1').innerHTML = getRandominRange(5,15);
-	document.getElementById('l2').innerHTML = getRandominRange(5,15);
-} else if (lev==2) {
-	var bm = 25;
-	if (ranIn == 2) bm = 15;
-	document.getElementById('l1').innerHTML = getRandominRange(10,bm);
-	document.getElementById('l2').innerHTML = getRandominRange(10,bm);
-	document.getElementById('l3').innerHTML = getRandominRange(10,bm);
-	document.getElementById('op2').innerHTML = ops[ranIn];
-	if (ranIn==2)
-		ranIn = getRandominRange(0,1);
-	else
-		ranIn = getRandominRange(0,2);
+window.onload = function() {
+	newquestion();
 }
 
-document.getElementById('op1').innerHTML = ops[ranIn];
-document.getElementById('timer').innerHTML = timer;
+function newquestion() {
+	timer = tottimer[lev-1];
+	ranIn = getRandominRange(0,2);
+	if (lev==1) {
+		document.getElementById('l1').innerHTML = getRandominRange(5,15);
+		document.getElementById('l2').innerHTML = getRandominRange(5,15);
+	} else if (lev==2) {
+		var bm = 25;
+		if (ranIn == 2) bm = 15;
+		document.getElementById('l1').innerHTML = getRandominRange(10,bm);
+		document.getElementById('l2').innerHTML = getRandominRange(10,bm);
+		document.getElementById('l3').innerHTML = getRandominRange(10,bm);
+		document.getElementById('op2').innerHTML = ops[ranIn];
+		if (ranIn==2)
+			ranIn = getRandominRange(0,1);
+		else
+			ranIn = getRandominRange(0,2);
+	}
+	document.getElementById('op1').innerHTML = ops[ranIn];
+	document.getElementById('timer').innerHTML = timer;
+}
+
 
 ///////// ADD PORTALS ////////
 
@@ -130,7 +143,9 @@ var a = setInterval(function(){myfunc()},1000);
 	
 function myfunc() {
 	timer--;
-	if (timer<0) timer = 0;
+	if (timer<=0) {
+		newquestion();
+	}
 	document.getElementById('timer').innerHTML = timer;
 }
 
@@ -181,7 +196,7 @@ function move(){
 	}
 
 	if(isAnswerCorrect){
-		window.alert("Correct...\\/");
+		window.alert("Good Job...!!");
 		b.cell([posiRow,posiCol]).rid();
 		dis = parseInt(timer/Timers[lev-1]) + 1;
 		if(posiRow%2==0){
@@ -287,24 +302,6 @@ function move(){
 	document.getElementById('target').value = "";
 	
 	if (isAnswerCorrect) {
-		timer = tottimer[lev-1];
-		ranIn = getRandominRange(0,2);
-		if (lev==1) {
-			document.getElementById('l1').innerHTML = getRandominRange(5,15);
-			document.getElementById('l2').innerHTML = getRandominRange(5,15);
-		} else if (lev==2) {
-			var bm = 25;
-			if (ranIn == 2) bm = 15;
-			document.getElementById('l1').innerHTML = getRandominRange(10,bm);
-			document.getElementById('l2').innerHTML = getRandominRange(10,bm);
-			document.getElementById('l3').innerHTML = getRandominRange(10,bm);
-			document.getElementById('op2').innerHTML = ops[ranIn];
-			if (ranIn==2)
-				ranIn = getRandominRange(0,1);
-			else
-				ranIn = getRandominRange(0,2);
-		}
-		document.getElementById('op1').innerHTML = ops[ranIn];
-		document.getElementById('timer').innerHTML = timer;
+		newquestion();
 	}
 }
