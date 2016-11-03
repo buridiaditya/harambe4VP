@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Title</title>
+  <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+  
+<script src="https://use.fontawesome.com/99b7d33a47.js"></script>
+
+  <style type="text/css">
+    label {
+      font-size: 70px;
+      color: #36486b;
+    }
+    #timer {
+      font-size: 100px;
+    }
+    input {
+      text-align: center;
+      font-family: 'Amatic SC', cursive;
+      font-size: 40px;
+    }
+    button {
+      text-align: center;
+      font-family: 'Amatic SC', cursive;
+      font-size: 40px;
+    }
+    body {
+      -webkit-column-count: 3;
+      -webkit-column-count: 2;
+      -webkit-column-rule-style: solid;
+      -webkit-column-rule-color: lightblue;
+      -moz-column-count: 2;
+      -moz-column-rule-style: solid;
+      -moz-column-rule-color: lightblue;
+    }
+    .Title {
+      font-size: 200px;
+    }
+    html { 
+      background: url(Images/weather.png) no-repeat center center fixed; 
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body style = "text-align: center; font-family: 'Amatic SC', cursive; position relative;">
+  <div>
+    <table id='game' align="center"></table>
+  </div>
+  <p style = "font-size: 80px; font-weight: bold; color: #618685;">LEVEL <label id='level' style = "font-size: 70px">2</label></p>
+  <label id='l1' class='labels'>5</label> &nbsp&nbsp
+  <label id='op1' class='labels'>+</label>&nbsp&nbsp
+  <label id='bko' class='labels'>(</label>&nbsp&nbsp
+  <label id='l2' class='labels'>5</label> &nbsp&nbsp
+  <label id='op2' class='labels'>+</label>&nbsp&nbsp
+  <label id='l3' class='labels'>5</label> &nbsp&nbsp
+  <label id='bkc' class='labels'>)</label>&nbsp&nbsp 
+  <br/>
+  <script src="jsboard.min.js"></script>
+  <input type="text" name="input" id='target' placeholder = "Answer"/>
+  <br/>
+  <br/>
+  <button id = 'btn1' onclick = "move()"> Move </button>
+  <br/>
+  <br/>
+  <label id='timer'>30</label>
+  
+  <br/>
+  <br/>
+  
+  <p style = "font-family: 'Pacifico', cursive; bottom: 10px;">Created &nbsp with &nbsp<i class="fa fa-heart" aria-hidden="true"></i> &nbsp by &nbsp harambe4VP</p>
+  <script src="index.js"></script>
+</body>
+</html>

@@ -3,11 +3,13 @@ var x = jsboard.piece({ text: "X", fontSize: "40px", textAlign: "center" });
 var posiCol = 0;
 var posiRow = 9;
 var past = 0;
-var timer = 30;
+var timer;
 var CLR1 = "#99ff66";
 var CLR2 = "#ff4d4d"
 var ranIn = 0;
 var ops = ["+","-","*"];
+var tottimer = [30,60,90];
+var Timers = [5,10,15];
 
 var lev = document.getElementById('level').innerHTML;
 
@@ -27,10 +29,40 @@ txt.addEventListener('keypress', function(event) {
         go.click();
 });
 
-timer = 30;
-ranIn = (parseInt(Math.random()*10))%3;
-document.getElementById('l1').innerHTML = parseInt(Math.random()*10+1);
-document.getElementById('l2').innerHTML = parseInt(Math.random()*10+1);
+
+function getRandominRange(a,bm) {
+	if (a>bm){
+		var tmp = a,a =bm,bm=tmp;
+	}
+	return parseInt(Math.random()*(bm-a+1)+a);
+}
+
+function eval(a,bm,ind) {
+	if (ind==0) return a+bm;
+	else if (ind==1) return a-bm;
+	return a*bm;
+}
+
+
+var timer = tottimer[lev-1];
+ranIn = getRandominRange(0,2);
+
+if (lev==1) {
+	document.getElementById('l1').innerHTML = getRandominRange(5,15);
+	document.getElementById('l2').innerHTML = getRandominRange(5,15);
+} else if (lev==2) {
+	var bm = 25;
+	if (ranIn == 2) bm = 15;
+	document.getElementById('l1').innerHTML = getRandominRange(10,bm);
+	document.getElementById('l2').innerHTML = getRandominRange(10,bm);
+	document.getElementById('l3').innerHTML = getRandominRange(10,bm);
+	document.getElementById('op2').innerHTML = ops[ranIn];
+	if (ranIn==2)
+		ranIn = getRandominRange(0,1);
+	else
+		ranIn = getRandominRange(0,2);
+}
+
 document.getElementById('op1').innerHTML = ops[ranIn];
 document.getElementById('timer').innerHTML = timer;
 
@@ -49,7 +81,6 @@ function addPortal(clr) {
 		if (i%2==0) {
 			do {
 				k = parseInt((Math.random()*100)%(10-last)) + last;
-
 				//////////  Site Loading time increasing bcos of this ///////
 				
 				if (clr==CLR2) {
@@ -63,7 +94,6 @@ function addPortal(clr) {
 		} else {
 			do {
 				k = parseInt((Math.random()*100)%(10-last));
-
 				if (clr==CLR2) {
 					while (G[i]==k) {
 						k = parseInt((Math.random()*100)%(10-last));		
@@ -85,7 +115,8 @@ function addPortal(clr) {
 		else 
 			R[i] = k;
 
-		b.cell([i,parseInt(k%10)]).style({
+		var bb = parseInt(k%10);
+		b.cell([i,bb]).style({
 			background: clr
 		});
 	}
@@ -121,139 +152,159 @@ function move(){
 
 	b.cell([posiRow,posiCol]).rid();
 	var isAnswerCorrect = 0;
+	var greenCol;
+	var redCol;
+	var portalJump = false;
 	
 	if (lev == 1) {
 		var dis = parseInt(document.getElementById('target').value);
 		var val1 = parseInt(document.getElementById('l1').innerHTML);
 		var val2 = parseInt(document.getElementById('l2').innerHTML);
 		var op = document.getElementById('op1').innerHTML;
-		var greenCol;
-		var redCol;
-		var portalJump = false;
-		
-		if((op.localeCompare("+") == 0 ) && (dis == val1 + val2)){
+		var id1 = ops.indexOf(op);
+		var inp = eval(val1,val2,id1);
+		if (inp==dis) 
 			isAnswerCorrect = 1;
-		}
-		else if((op.localeCompare("*") == 0 ) && dis == val1 * val2){
+	} else if (lev==2) {
+		var dis = parseInt(document.getElementById('target').value);
+		var val1 = parseInt(document.getElementById('l1').innerHTML);
+		var val2 = parseInt(document.getElementById('l2').innerHTML);
+		var val3 = parseInt(document.getElementById('l3').innerHTML);
+		var op1 = document.getElementById('op1').innerHTML;
+		var op2 = document.getElementById('op2').innerHTML;
+		var inp;
+		var id1 = ops.indexOf(op1),id2 = ops.indexOf(op2);
+		inp = eval(val2,val3,id2);
+		inp = eval(val1,inp,id1);
+		if (inp==dis) 
 			isAnswerCorrect = 1;
-		}
-		else if((op.localeCompare("-") == 0 ) && dis == val1 - val2){
-			isAnswerCorrect = 1;
-		}
+	}
 
-		if(isAnswerCorrect){
-			window.alert("Correct...\\/");
-			b.cell([posiRow,posiCol]).rid();
-			dis = parseInt(timer/5) + 1;
-			if(posiRow%2==0){
-				if (posiCol<6 && posiRow==0) {
-					won();
-					return ;
-				}
-				greenCol = G[posiRow];
-				if(posiCol - dis <= greenCol && posiCol>greenCol){
-					posiCol = greenCol;
-					portalJump = true;
-				}
-				else {
-					posiCol=posiCol - dis;	
-					if(posiCol < 0){
-						posiCol = -1*posiCol - 1;
-						posiRow = posiRow - 1;	
-						if(posiCol >= G[posiRow]){
-							portalJump = true;
-							posiCol = G[posiRow];
-						}
-					}
-				}
-			} else {
-				greenCol = G[posiRow];
-				if(posiCol + dis >= greenCol && posiCol<greenCol){
-					posiCol = greenCol;
-					portalJump = true;
-				} else {
-					posiCol = posiCol + dis;
-					if(posiCol > 9){
-						posiCol = 19 - posiCol;
-						posiRow = posiRow -1 ;
-						if(posiCol <= G[posiRow]){
-							portalJump = true;
-							posiCol = G[posiRow];
-						}
-					}
-				}
+	if(isAnswerCorrect){
+		window.alert("Correct...\\/");
+		b.cell([posiRow,posiCol]).rid();
+		dis = parseInt(timer/Timers[lev-1]) + 1;
+		if(posiRow%2==0){
+			if (posiCol<6 && posiRow==0) {
+				won();
+				return ;
 			}
-			
-			if(posiCol == R[posiRow] && !portalJump){
-				posiCol = posiCol + ((posiRow%2==0)?(1):(-1));
+			greenCol = G[posiRow];
+			if(posiCol - dis <= greenCol && posiCol>greenCol){
+				posiCol = greenCol;
+				portalJump = true;
+			}
+			else {
+				posiCol=posiCol - dis;	
+				if(posiCol < 0){
+					posiCol = -1*posiCol - 1;
+					posiRow = posiRow - 1;	
+					if(posiCol >= G[posiRow]){
+						portalJump = true;
+						posiCol = G[posiRow];
+					}
+				}
 			}
 		} else {
-			window.alert("Nope...Try Again Dude");
-			dis = 6;
-			var tempposiCol,tempposiRow;
-			if(posiRow%2==0){
-				redCol = R[posiRow];
-				if(posiCol - dis <= redCol && posiCol>redCol){
-					posiCol = redCol;
-					portalJump = true;
-				}
-				else {
-					tempposiCol = posiCol - dis;	
-					if(tempposiCol < 0){
-						tempposiCol = -1*tempposiCol - 1;
-						tempposiRow = tempposiRow - 1;	
-						if(tempposiCol >= R[tempposiRow]){
-							portalJump = true;
-							posiCol = R[tempposiRow];
-							posiRow--;
-						}
-					}
-				}
+			greenCol = G[posiRow];
+			if(posiCol + dis >= greenCol && posiCol<greenCol){
+				posiCol = greenCol;
+				portalJump = true;
 			} else {
-				redCol = R[posiRow];
-				if(posiCol + dis >= redCol && posiCol<redCol){
-					posiCol = redCol;
-					portalJump = true;
-				} else {
-					tempposiCol = posiCol + dis;
-					if(tempposiCol > 9){
-						tempposiCol = 19 - tempposiCol;
-						tempposiRow = posiRow - 1 ;
-						if(posiCol <= R[tempposiRow]){
-							portalJump = true;
-							posiCol = R[tempposiRow];
-							posiRow--;
-						}
+				posiCol = posiCol + dis;
+				if(posiCol > 9){
+					posiCol = 19 - posiCol;
+					posiRow = posiRow -1 ;
+					if(posiCol <= G[posiRow]){
+						portalJump = true;
+						posiCol = G[posiRow];
 					}
 				}
 			}
 		}
-
-		///// generation of random expression/////////
-		b.cell([posiRow,posiCol]).place(x.clone());
-		// transports from one Green Portal to next one
-		if (portalJump) {
-			b.cell([posiRow,posiCol]).rid();
-			if(isAnswerCorrect && posiRow!=0){
-				posiRow = posiRow-1;
-				posiCol = G[posiRow];
-			}
-			else if (!isAnswerCorrect && posiRow!=9){
-				posiRow = posiRow+1;
-				posiCol = R[posiRow];
-			}
-			b.cell([posiRow,posiCol]).place(x.clone());
-		}
-
-		document.getElementById('target').value = "";
 		
-		if (isAnswerCorrect) {
-			timer = 30;
-			ranIn = (parseInt(Math.random()*10))%3;
-			document.getElementById('l1').innerHTML = parseInt(Math.random()*10+1);
-			document.getElementById('l2').innerHTML = parseInt(Math.random()*10+1);
-			document.getElementById('op1').innerHTML = ops[ranIn];
-			document.getElementById('timer').innerHTML = timer;
+		if(posiCol == R[posiRow] && !portalJump){
+			posiCol = posiCol + ((posiRow%2==0)?(1):(-1));
 		}
+	} else {
+		window.alert("Nope...Try Again Dude");
+		dis = 6;
+		var tempposiCol,tempposiRow;
+		if(posiRow%2==0){
+			redCol = R[posiRow];
+			if(posiCol - dis <= redCol && posiCol>redCol){
+				posiCol = redCol;
+				portalJump = true;
+			}
+			else {
+				tempposiCol = posiCol - dis;	
+				if(tempposiCol < 0){
+					tempposiCol = -1*tempposiCol - 1;
+					tempposiRow = tempposiRow - 1;	
+					if(tempposiCol >= R[tempposiRow]){
+						portalJump = true;
+						posiCol = R[tempposiRow];
+						posiRow--;
+					}
+				}
+			}
+		} else {
+			redCol = R[posiRow];
+			if(posiCol + dis >= redCol && posiCol<redCol){
+				posiCol = redCol;
+				portalJump = true;
+			} else {
+				tempposiCol = posiCol + dis;
+				if(tempposiCol > 9){
+					tempposiCol = 19 - tempposiCol;
+					tempposiRow = posiRow - 1 ;
+					if(posiCol <= R[tempposiRow]){
+						portalJump = true;
+						posiCol = R[tempposiRow];
+						posiRow--;
+					}
+				}
+			}
+		}
+	}
+
+	///// generation of random expression/////////
+	b.cell([posiRow,posiCol]).place(x.clone());
+	// transports from one Green Portal to next one
+	if (portalJump) {
+		b.cell([posiRow,posiCol]).rid();
+		if(isAnswerCorrect && posiRow!=0){
+			posiRow = posiRow-1;
+			posiCol = G[posiRow];
+		}
+		else if (!isAnswerCorrect && posiRow!=9){
+			posiRow = posiRow+1;
+			posiCol = R[posiRow];
+		}
+		b.cell([posiRow,posiCol]).place(x.clone());
+	}
+
+	document.getElementById('target').value = "";
+	
+	if (isAnswerCorrect) {
+		timer = tottimer[lev-1];
+		ranIn = getRandominRange(0,2);
+		if (lev==1) {
+			document.getElementById('l1').innerHTML = getRandominRange(5,15);
+			document.getElementById('l2').innerHTML = getRandominRange(5,15);
+		} else if (lev==2) {
+			var bm = 25;
+			if (ranIn == 2) bm = 15;
+			document.getElementById('l1').innerHTML = getRandominRange(10,bm);
+			document.getElementById('l2').innerHTML = getRandominRange(10,bm);
+			document.getElementById('l3').innerHTML = getRandominRange(10,bm);
+			document.getElementById('op2').innerHTML = ops[ranIn];
+			if (ranIn==2)
+				ranIn = getRandominRange(0,1);
+			else
+				ranIn = getRandominRange(0,2);
+		}
+		document.getElementById('op1').innerHTML = ops[ranIn];
+		document.getElementById('timer').innerHTML = timer;
 	}
 }
