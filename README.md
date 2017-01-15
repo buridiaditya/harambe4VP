@@ -1,6 +1,6 @@
 # Arithmetic Portal
 
-## App by Team harambe4VP
+## App by Team akatsuki
 
 ### About 
 ```
